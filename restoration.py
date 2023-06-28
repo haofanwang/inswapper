@@ -1,6 +1,8 @@
 import sys
 sys.path.append('./CodeFormer/CodeFormer')
 
+import os
+import cv2
 import torch
 import torch.nn.functional as F
 from torchvision.transforms.functional import normalize
@@ -55,7 +57,7 @@ def set_realesrgan():
     return upsampler
 
 
-def face_restoration(img, background_enhance, face_upsample, upscale, codeformer_fidelity):
+def face_restoration(img, background_enhance, face_upsample, upscale, codeformer_fidelity, upsampler, codeformer_net, device):
     """Run a single prediction on the model"""
     try: # global try
         # take the default setting for the demo
