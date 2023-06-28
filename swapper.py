@@ -101,13 +101,14 @@ def process(source_img: Union[Image.Image, List],
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Face swap.")
-    parser.add_argument("--source_img", type=list, required=True, help="The path list of source image.")
+    parser.add_argument("--source_img", type=str, required=True, help="The path of source image, it can be multiple images, dir;dir2;dir3.")
     parser.add_argument("--target_img", type=str, required=True, help="The path of target image.")
-    parser.add_argument("--face_restore", type=bool, action="store_true", help="The flag for face restoration.")
-    parser.add_argument("--background_enhance", type=bool, action="store_true", help="The flag for background enhancement.")
-    parser.add_argument("--face_upsample", type=bool, action="store_true", help="The flag for face upsample.")
+    parser.add_argument("--face_restore", action="store_true", help="The flag for face restoration.")
+    parser.add_argument("--background_enhance", action="store_true", help="The flag for background enhancement.")
+    parser.add_argument("--face_upsample", action="store_true", help="The flag for face upsample.")
     parser.add_argument("--upscale", type=int, default=1, help="The upscale value, up to 4.")
     parser.add_argument("--codeformer_fidelity", type=float, default=0.5, help="The codeformer fidelity.")
+    args = parser.parse_args()
     return args
 
 
@@ -115,7 +116,8 @@ if __name__ == "__main__":
     
     args = parse_args()
     
-    source_img_paths = args.source_img
+    source_img_paths = args.source_img.split(';')
+    print(source_img_paths)
     target_img_path = args.target_img
     
     source_img = [Image.open(img_path) for img_path in source_img_paths]
@@ -151,7 +153,10 @@ if __name__ == "__main__":
                                         args.background_enhance, 
                                         args.face_upsample, 
                                         args.upscale, 
-                                        args.codeformer_fidelity)
+                                        args.codeformer_fidelity,
+                                        upsampler,
+                                        codeformer_net,
+                                        device)
         result_image = Image.fromarray(result_image)
     
     # save result
