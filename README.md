@@ -47,7 +47,7 @@ To improve to quality of face, we can further do face restoration as shown in th
 
 ```bash
 python swapper.py \
---source_img=["./data/man1.jpeg", "./data/man2.jpeg"] \
+--source_img="./data/man1.jpeg;./data/man2.jpeg" \
 --target_img "./data/mans1.jpeg" \
 --face_restore \
 --background_enhance \
