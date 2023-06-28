@@ -1,4 +1,4 @@
-# roop-for-diffusers
+# inswapper
 
 ## One-click Face Swapper (Deepface).
 
