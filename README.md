@@ -1,6 +1,6 @@
 # inswapper
 
-## One-click training-free Face Swapper.
+## One-click Face Swapper and Restoration.
 
 
 <left><img src="https://github.com/haofanwang/roop-for-diffusers/raw/main/data/mans1.jpeg" width="49%" height="49%"></left> 
