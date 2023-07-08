@@ -1,6 +1,6 @@
 # inswapper
 
-One-click Face Swapper and Restoration powered by [insightface](https://github.com/deepinsight/insightface).
+One-click Face Swapper and Restoration powered by [insightface](https://github.com/deepinsight/insightface). I don't use the name ROOP here, as the credit should be given to the group of the developers behind the face swap model.
 
 
 <left><img src="https://github.com/haofanwang/inswapper/raw/main/data/mans1.jpeg" width="49%" height="49%"></left> 
