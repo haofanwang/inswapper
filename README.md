@@ -1,6 +1,6 @@
 # inswapper
 
-One-click Face Swapper and Restoration powered by [insightface](https://github.com/deepinsight/insightface). I don't use the name ROOP here, as the credit should be given to the group of the developers behind the face swap model.
+One-click Face Swapper and Restoration powered by [insightface](https://github.com/deepinsight/insightface). We don't use the name ROOP here, as the credit should be given to the group that develops this great face swap model.
 
 
 <left><img src="https://github.com/haofanwang/inswapper/raw/main/data/mans1.jpeg" width="49%" height="49%"></left> 
@@ -58,7 +58,7 @@ python swapper.py \
 You will obtain the exact result as above.
 
 ## Acknowledgement
-This project is inspired by [inswapper](https://huggingface.co/deepinsight/inswapper/tree/main), thanks [insightface.ai](https://insightface.ai/) for releasing their powful swap model that makes this happen. Our codebase is built on the top of [sd-webui-roop](https://github.com/s0md3v/sd-webui-roop) and [CodeFormer](https://huggingface.co/spaces/sczhou/CodeFormer).
+This project is inspired by [inswapper](https://huggingface.co/deepinsight/inswapper/tree/main), thanks [insightface.ai](https://insightface.ai/) for releasing their powerful face swap model that makes this happen. Our codebase is built on the top of [sd-webui-roop](https://github.com/s0md3v/sd-webui-roop) and [CodeFormer](https://huggingface.co/spaces/sczhou/CodeFormer).
 
 ## Contact
 If you have any issue, feel free to contact me via haofanwang.ai@gmail.com.
