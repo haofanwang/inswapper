@@ -85,11 +85,11 @@ def process(source_img: Union[Image.Image, List],
                 temp_frame = swap_face(face_swapper, source_face, target_face, temp_frame)
         else:
             # replace all faces in target image to same source_face
-            source_img = cv2.cvtColor(np.array(source_img), cv2.COLOR_RGB2BGR)
-            source_face = get_one_face(face_analyser, source_img)
-            if source_face is None:
-                raise Exception("No source face found!")
-            for target_face in target_faces:
+            for i in range(len(target_faces)):
+                target_face = target_faces[i]
+                source_face = get_one_face(face_analyser, cv2.cvtColor(np.array(source_img[0]), cv2.COLOR_RGB2BGR))
+                if source_face is None:
+                    raise Exception("No source face found!")
                 temp_frame = swap_face(face_swapper, source_face, target_face, temp_frame)
         result = temp_frame
     else:
