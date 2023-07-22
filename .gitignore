@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 result.png
 CodeFormer
 checkpoints

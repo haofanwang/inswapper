@@ -103,6 +103,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Face swap.")
     parser.add_argument("--source_img", type=str, required=True, help="The path of source image, it can be multiple images, dir;dir2;dir3.")
     parser.add_argument("--target_img", type=str, required=True, help="The path of target image.")
+    parser.add_argument("--output_img", type=str, required=False, default="result.png", help="The path and filename of output image.")
     parser.add_argument("--face_restore", action="store_true", help="The flag for face restoration.")
     parser.add_argument("--background_enhance", action="store_true", help="The flag for background enhancement.")
     parser.add_argument("--face_upsample", action="store_true", help="The flag for face upsample.")
@@ -160,4 +161,5 @@ if __name__ == "__main__":
         result_image = Image.fromarray(result_image)
     
     # save result
-    result_image.save("result.png")
+    result_image.save(args.output_img)
+    print(f'Result saved successfully: {args.output_img}')
