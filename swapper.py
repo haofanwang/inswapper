@@ -46,19 +46,29 @@ def get_many_faces(face_analyser,
     except IndexError:
         return None
 
-    
+
 def swap_face(face_swapper,
-              source_face, 
-              target_face, 
+              face_analyser,
+              source_img,
+              target_faces,
+              source_index,
+              target_index,
               temp_frame):
     """
     paste source_face on target image
     """
+    target_face = target_faces[target_index]
+    source_face = get_one_face(face_analyser, cv2.cvtColor(np.array(source_img[source_index]), cv2.COLOR_RGB2BGR))
+
+    if source_face is None:
+        raise Exception("No source face found!")
+
     return face_swapper.get(temp_frame, target_face, source_face, paste_back=True)
  
     
-def process(source_img: Union[Image.Image, List], 
-            target_img: Image.Image, 
+def process(source_img: Union[Image.Image, List],
+            target_img: Image.Image,
+            target_index: int,
             model: str):
         
     # load face_analyser
@@ -78,19 +88,46 @@ def process(source_img: Union[Image.Image, List],
         if isinstance(source_img, list) and len(source_img) == len(target_faces):
             # replace faces in target image from the left to the right by order
             for i in range(len(target_faces)):
-                target_face = target_faces[i]
-                source_face = get_one_face(face_analyser, cv2.cvtColor(np.array(source_img[i]), cv2.COLOR_RGB2BGR))
-                if source_face is None:
-                    raise Exception("No source face found!")
-                temp_frame = swap_face(face_swapper, source_face, target_face, temp_frame)
+                source_index = i
+                target_index = i
+
+                temp_frame = swap_face(
+                    face_swapper,
+                    face_analyser,
+                    source_img,
+                    target_faces,
+                    source_index,
+                    target_index,
+                    temp_frame
+                )
         else:
-            # replace all faces in target image to same source_face
-            source_img = cv2.cvtColor(np.array(source_img), cv2.COLOR_RGB2BGR)
-            source_face = get_one_face(face_analyser, source_img)
-            if source_face is None:
-                raise Exception("No source face found!")
-            for target_face in target_faces:
-                temp_frame = swap_face(face_swapper, source_face, target_face, temp_frame)
+            if target_index == -1:
+                # replace all faces in target image to same source_face
+                for i in range(len(target_faces)):
+                    source_index = 0
+                    target_index = i
+
+                    temp_frame = swap_face(
+                        face_swapper,
+                        face_analyser,
+                        source_img,
+                        target_faces,
+                        source_index,
+                        target_index,
+                        temp_frame
+                    )
+            else:
+                source_index = 0
+
+                temp_frame = swap_face(
+                    face_swapper,
+                    face_analyser,
+                    source_img,
+                    target_faces,
+                    source_index,
+                    target_index,
+                    temp_frame
+                )
         result = temp_frame
     else:
         print("No target faces found!")
@@ -103,6 +140,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Face swap.")
     parser.add_argument("--source_img", type=str, required=True, help="The path of source image, it can be multiple images, dir;dir2;dir3.")
     parser.add_argument("--target_img", type=str, required=True, help="The path of target image.")
+    parser.add_argument("--output_img", type=str, required=False, default="result.png", help="The path and filename of output image.")
+    parser.add_argument("--target_index", type=int, required=False, default=-1, help="The index of the face to swap (left to right) in the target image, starting at 0 (-1 swaps all faces in the target image")
     parser.add_argument("--face_restore", action="store_true", help="The flag for face restoration.")
     parser.add_argument("--background_enhance", action="store_true", help="The flag for background enhancement.")
     parser.add_argument("--face_upsample", action="store_true", help="The flag for face upsample.")
@@ -125,7 +164,7 @@ if __name__ == "__main__":
 
     # download from https://huggingface.co/deepinsight/inswapper/tree/main
     model = "./checkpoints/inswapper_128.onnx"
-    result_image = process(source_img, target_img, model)
+    result_image = process(source_img, target_img, args.target_index, model)
     
     if args.face_restore:
         from restoration import *
@@ -160,4 +199,5 @@ if __name__ == "__main__":
         result_image = Image.fromarray(result_image)
     
     # save result
-    result_image.save("result.png")
+    result_image.save(args.output_img)
+    print(f'Result saved successfully: {args.output_img}')

@@ -13,12 +13,18 @@ One-click Face Swapper and Restoration powered by [insightface](https://github.c
 git clone https://github.com/haofanwang/inswapper.git
 cd inswapper
 
+# create a Python venv
+python3 -m venv venv
+
+# activate the venv
+source venv/bin/activate
+
 # install required packages
 pip install -r requirements.txt
 ```
 
 ## Download Checkpoints
-First, you need to download [face swap model](https://huggingface.co/deepinsight/inswapper/resolve/main/inswapper_128.onnx) and save it under `./checkpoints`. To obtain better result, it is highly recommendated to improve image quality with face restoration model. Here, we use [CodeFormer](https://github.com/sczhou/CodeFormer). You can finish all as following, required models will be downloaded automatically when you first run the inference.
+First, you need to download [face swap model](https://huggingface.co/deepinsight/inswapper/resolve/main/inswapper_128.onnx) and save it under `./checkpoints`. To obtain better result, it is highly recommended to improve image quality with face restoration model. Here, we use [CodeFormer](https://github.com/sczhou/CodeFormer). You can finish all as following, required models will be downloaded automatically when you first run the inference.
 
 ```bash
 mkdir checkpoints
