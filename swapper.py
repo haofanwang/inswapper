@@ -79,15 +79,20 @@ def process(source_img: Union[Image.Image, List],
     
     # detect faces that will be replaced in the target image
     target_faces = get_many_faces(face_analyser, target_img)
+    num_target_faces = len(target_faces)
+    num_source_images = len(source_img)
 
     if target_faces is not None:
         temp_frame = copy.deepcopy(target_img)
-        if isinstance(source_img, list) and len(source_img) == len(target_faces):
+        if isinstance(source_img, list) and num_source_images == num_target_faces:
             print("Replacing faces in target image from the left to the right by order")
-            for i in range(len(target_faces)):
+            for i in range(num_target_faces):
                 source_faces = get_many_faces(face_analyser, cv2.cvtColor(np.array(source_img[i]), cv2.COLOR_RGB2BGR))
                 source_index = i
                 target_index = i
+
+                if source_faces is None:
+                    raise Exception("No source faces found!")
 
                 temp_frame = swap_face(
                     face_swapper,
@@ -97,21 +102,32 @@ def process(source_img: Union[Image.Image, List],
                     target_index,
                     temp_frame
                 )
-        elif len(source_img) == 1:
+        elif num_source_images == 1:
             # detect source faces that will be replaced into the target image
             source_faces = get_many_faces(face_analyser, cv2.cvtColor(np.array(source_img[0]), cv2.COLOR_RGB2BGR))
+            num_source_faces = len(source_faces)
+            print(f"Source faces: {num_source_faces}")
+            print(f"Target faces: {num_target_faces}")
+
+            if source_faces is None:
+                raise Exception("No source faces found!")
 
             if target_index == -1:
-                if len(source_faces) > 1 and len(source_faces) != len(target_faces):
-                    raise Exception("Number of faces in the source image and target image must match")
-
-                if len(source_faces) == 1:
+                if num_source_faces == 1:
                     print("Replacing all faces in target image with the same face from the source image")
+                    num_iterations = num_target_faces
+                elif num_source_faces < num_target_faces:
+                    print("There are less faces in the source image than the target image, replacing as many as we can")
+                    num_iterations = num_source_faces
+                elif num_target_faces < num_source_faces:
+                    print("There are less faces in the target image than the source image, replacing as many as we can")
+                    num_iterations = num_target_faces
                 else:
                     print("Replacing all faces in the target image with the faces from the source image")
+                    num_iterations = num_target_faces
 
-                for i in range(len(target_faces)):
-                    source_index = 0 if len(source_faces) == 1 else i
+                for i in range(num_iterations):
+                    source_index = 0 if num_source_faces == 1 else i
                     target_index = i
 
                     temp_frame = swap_face(
