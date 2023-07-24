@@ -48,8 +48,7 @@ def get_many_faces(face_analyser,
 
 
 def swap_face(face_swapper,
-              face_analyser,
-              source_img,
+              source_faces,
               target_faces,
               source_index,
               target_index,
@@ -57,11 +56,8 @@ def swap_face(face_swapper,
     """
     paste source_face on target image
     """
+    source_face = source_faces[source_index]
     target_face = target_faces[target_index]
-    source_face = get_one_face(face_analyser, cv2.cvtColor(np.array(source_img[source_index]), cv2.COLOR_RGB2BGR))
-
-    if source_face is None:
-        raise Exception("No source face found!")
 
     return face_swapper.get(temp_frame, target_face, source_face, paste_back=True)
  
@@ -81,53 +77,65 @@ def process(source_img: Union[Image.Image, List],
     # read target image
     target_img = cv2.cvtColor(np.array(target_img), cv2.COLOR_RGB2BGR)
     
-    # detect faces that will be replaced in target_img
+    # detect faces that will be replaced in the target image
     target_faces = get_many_faces(face_analyser, target_img)
+
     if target_faces is not None:
         temp_frame = copy.deepcopy(target_img)
         if isinstance(source_img, list) and len(source_img) == len(target_faces):
-            # replace faces in target image from the left to the right by order
+            print("Replacing faces in target image from the left to the right by order")
             for i in range(len(target_faces)):
+                source_faces = get_many_faces(face_analyser, cv2.cvtColor(np.array(source_img[i]), cv2.COLOR_RGB2BGR))
                 source_index = i
                 target_index = i
 
                 temp_frame = swap_face(
                     face_swapper,
-                    face_analyser,
-                    source_img,
+                    source_faces,
                     target_faces,
                     source_index,
                     target_index,
                     temp_frame
                 )
-        else:
+        elif len(source_img) == 1:
+            # detect source faces that will be replaced into the target image
+            source_faces = get_many_faces(face_analyser, cv2.cvtColor(np.array(source_img[0]), cv2.COLOR_RGB2BGR))
+
             if target_index == -1:
-                # replace all faces in target image to same source_face
+                if len(source_faces) > 1 and len(source_faces) != len(target_faces):
+                    raise Exception("Number of faces in the source image and target image must match")
+
+                if len(source_faces) == 1:
+                    print("Replacing all faces in target image with the same face from the source image")
+                else:
+                    print("Replacing all faces in the target image with the faces from the source image")
+
                 for i in range(len(target_faces)):
-                    source_index = 0
+                    source_index = 0 if len(source_faces) == 1 else i
                     target_index = i
 
                     temp_frame = swap_face(
                         face_swapper,
-                        face_analyser,
-                        source_img,
+                        source_faces,
                         target_faces,
                         source_index,
                         target_index,
                         temp_frame
                     )
             else:
+                print("Replacing specific face in the target image with the face in the source image")
                 source_index = 0
 
                 temp_frame = swap_face(
                     face_swapper,
-                    face_analyser,
-                    source_img,
+                    source_faces,
                     target_faces,
                     source_index,
                     target_index,
                     temp_frame
                 )
+        else:
+            raise Exception("Unsupported face configuration")
         result = temp_frame
     else:
         print("No target faces found!")
