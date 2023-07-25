@@ -170,10 +170,10 @@ def process(source_img: Union[Image.Image, List],
                         target_index = int(target_indexes[index])
 
                         if source_index > num_source_faces-1:
-                            raise Exception(f"Source index {source_index} is higher than the number of faces in the source image")
+                            raise ValueError(f"Source index {source_index} is higher than the number of faces in the source image")
 
                         if target_index > num_target_faces-1:
-                            raise Exception(f"Target index {target_index} is higher than the number of faces in the target image")
+                            raise ValueError(f"Target index {target_index} is higher than the number of faces in the target image")
 
                         temp_frame = swap_face(
                             face_swapper,
