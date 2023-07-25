@@ -139,22 +139,6 @@ def process(source_img: Union[Image.Image, List],
                         target_index,
                         temp_frame
                     )
-            elif source_indexes == "-1" and target_indexes == "-1":
-                print("Replacing specific face(s) in the target image with the face from the source image")
-                target_indexes = target_indexes.split(',')
-                source_index = 0
-
-                for target_index in target_indexes:
-                    target_index = int(target_index)
-
-                    temp_frame = swap_face(
-                        face_swapper,
-                        source_faces,
-                        target_faces,
-                        source_index,
-                        target_index,
-                        temp_frame
-                    )
             else:
                 print("Replacing specific face(s) in the target image with specific face(s) from the source image")
 
