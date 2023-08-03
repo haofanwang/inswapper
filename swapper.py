@@ -64,7 +64,8 @@ def swap_face(face_swapper,
     
 def process(source_img: Union[Image.Image, List],
             target_img: Image.Image,
-            target_index: int,
+            source_indexes: str,
+            target_indexes: str,
             model: str):
         
     # load face_analyser
@@ -112,7 +113,7 @@ def process(source_img: Union[Image.Image, List],
             if source_faces is None:
                 raise Exception("No source faces found!")
 
-            if target_index == -1:
+            if target_indexes == "-1":
                 if num_source_faces == 1:
                     print("Replacing all faces in target image with the same face from the source image")
                     num_iterations = num_target_faces
@@ -139,17 +140,49 @@ def process(source_img: Union[Image.Image, List],
                         temp_frame
                     )
             else:
-                print("Replacing specific face in the target image with the face in the source image")
-                source_index = 0
+                print("Replacing specific face(s) in the target image with specific face(s) from the source image")
 
-                temp_frame = swap_face(
-                    face_swapper,
-                    source_faces,
-                    target_faces,
-                    source_index,
-                    target_index,
-                    temp_frame
-                )
+                if source_indexes == "-1":
+                    source_indexes = ','.join(map(lambda x: str(x), range(num_source_faces)))
+
+                if target_indexes == "-1":
+                    target_indexes = ','.join(map(lambda x: str(x), range(num_target_faces)))
+
+                source_indexes = source_indexes.split(',')
+                target_indexes = target_indexes.split(',')
+                num_source_faces_to_swap = len(source_indexes)
+                num_target_faces_to_swap = len(target_indexes)
+
+                if num_source_faces_to_swap > num_source_faces:
+                    raise Exception("Number of source indexes is greater than the number of faces in the source image")
+
+                if num_target_faces_to_swap > num_target_faces:
+                    raise Exception("Number of target indexes is greater than the number of faces in the target image")
+
+                if num_source_faces_to_swap > num_target_faces_to_swap:
+                    num_iterations = num_source_faces_to_swap
+                else:
+                    num_iterations = num_target_faces_to_swap
+
+                if num_source_faces_to_swap == num_target_faces_to_swap:
+                    for index in range(num_iterations):
+                        source_index = int(source_indexes[index])
+                        target_index = int(target_indexes[index])
+
+                        if source_index > num_source_faces-1:
+                            raise ValueError(f"Source index {source_index} is higher than the number of faces in the source image")
+
+                        if target_index > num_target_faces-1:
+                            raise ValueError(f"Target index {target_index} is higher than the number of faces in the target image")
+
+                        temp_frame = swap_face(
+                            face_swapper,
+                            source_faces,
+                            target_faces,
+                            source_index,
+                            target_index,
+                            temp_frame
+                        )
         else:
             raise Exception("Unsupported face configuration")
         result = temp_frame
@@ -165,7 +198,8 @@ def parse_args():
     parser.add_argument("--source_img", type=str, required=True, help="The path of source image, it can be multiple images, dir;dir2;dir3.")
     parser.add_argument("--target_img", type=str, required=True, help="The path of target image.")
     parser.add_argument("--output_img", type=str, required=False, default="result.png", help="The path and filename of output image.")
-    parser.add_argument("--target_index", type=int, required=False, default=-1, help="The index of the face to swap (left to right) in the target image, starting at 0 (-1 swaps all faces in the target image")
+    parser.add_argument("--source_indexes", type=str, required=False, default="-1", help="Comma separated list of the face indexes to use (left to right) in the source image, starting at 0 (-1 uses all faces in the source image")
+    parser.add_argument("--target_indexes", type=str, required=False, default="-1", help="Comma separated list of the face indexes to swap (left to right) in the target image, starting at 0 (-1 swaps all faces in the target image")
     parser.add_argument("--face_restore", action="store_true", help="The flag for face restoration.")
     parser.add_argument("--background_enhance", action="store_true", help="The flag for background enhancement.")
     parser.add_argument("--face_upsample", action="store_true", help="The flag for face upsample.")
@@ -180,7 +214,7 @@ if __name__ == "__main__":
     args = parse_args()
     
     source_img_paths = args.source_img.split(';')
-    print(source_img_paths)
+    print("Source image paths:", source_img_paths)
     target_img_path = args.target_img
     
     source_img = [Image.open(img_path) for img_path in source_img_paths]
@@ -188,7 +222,7 @@ if __name__ == "__main__":
 
     # download from https://huggingface.co/deepinsight/inswapper/tree/main
     model = "./checkpoints/inswapper_128.onnx"
-    result_image = process(source_img, target_img, args.target_index, model)
+    result_image = process(source_img, target_img, args.source_indexes, args.target_indexes, model)
     
     if args.face_restore:
         from restoration import *
