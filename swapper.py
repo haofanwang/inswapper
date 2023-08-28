@@ -232,7 +232,7 @@ if __name__ == "__main__":
         
         # https://huggingface.co/spaces/sczhou/CodeFormer
         upsampler = set_realesrgan()
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
 
         codeformer_net = ARCH_REGISTRY.get("CodeFormer")(dim_embd=512,
                                                          codebook_size=1024,
