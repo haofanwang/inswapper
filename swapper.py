@@ -15,8 +15,8 @@ from PIL import Image
 from typing import List, Union, Dict, Set, Tuple
 
 
-def getFaceSwapModel(model_path: str, providers):
-    model = insightface.model_zoo.get_model(model_path, providers=providers)
+def getFaceSwapModel(model_path: str):
+    model = insightface.model_zoo.get_model(model_path)
     return model
 
 
@@ -76,7 +76,7 @@ def process(source_img: Union[Image.Image, List],
     
     # load face_swapper
     model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), model)
-    face_swapper = getFaceSwapModel(model_path, providers)
+    face_swapper = getFaceSwapModel(model_path)
     
     # read target image
     target_img = cv2.cvtColor(np.array(target_img), cv2.COLOR_RGB2BGR)
