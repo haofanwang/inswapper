@@ -87,7 +87,6 @@ def face_restoration(img, background_enhance, face_upsample, upscale, codeformer
             det_model=detection_model,
             save_ext="png",
             use_parse=True,
-            device=device,
         )
         bg_upsampler = upsampler if background_enhance else None
         face_upsampler = upsampler if face_upsample else None
