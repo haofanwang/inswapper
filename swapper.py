@@ -9,6 +9,7 @@ import cv2
 import copy
 import argparse
 import insightface
+import onnxruntime
 import numpy as np
 from PIL import Image
 from typing import List, Union, Dict, Set, Tuple
@@ -19,9 +20,9 @@ def getFaceSwapModel(model_path: str):
     return model
 
 
-def getFaceAnalyser(model_path: str,
+def getFaceAnalyser(model_path: str, providers,
                     det_size=(320, 320)):
-    face_analyser = insightface.app.FaceAnalysis(name="buffalo_l", root="./checkpoints")
+    face_analyser = insightface.app.FaceAnalysis(name="buffalo_l", root="./checkpoints", providers=providers)
     face_analyser.prepare(ctx_id=0, det_size=det_size)
     return face_analyser
 
@@ -67,9 +68,11 @@ def process(source_img: Union[Image.Image, List],
             source_indexes: str,
             target_indexes: str,
             model: str):
-        
+    # load machine default available providers
+    providers = onnxruntime.get_available_providers()
+
     # load face_analyser
-    face_analyser = getFaceAnalyser(model)
+    face_analyser = getFaceAnalyser(model, providers)
     
     # load face_swapper
     model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), model)
@@ -232,7 +235,7 @@ if __name__ == "__main__":
         
         # https://huggingface.co/spaces/sczhou/CodeFormer
         upsampler = set_realesrgan()
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu")
 
         codeformer_net = ARCH_REGISTRY.get("CodeFormer")(dim_embd=512,
                                                          codebook_size=1024,
