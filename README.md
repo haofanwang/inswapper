@@ -2,6 +2,8 @@
 
 One-click Face Swapper and Restoration powered by [insightface](https://github.com/deepinsight/insightface). We don't use the name ROOP here, as the credit should be given to the group that develops this great face swap model.
 
+## News
+🔥 We release [InstantID](https://github.com/InstantID/InstantID) as a state-of-the-art ID preservering generation method.
 
 <left><img src="https://github.com/haofanwang/inswapper/raw/main/data/mans1.jpeg" width="49%" height="49%"></left> 
 <right><img src="https://github.com/haofanwang/inswapper/raw/main/result.png" width="49%" height="49%"></right> 
